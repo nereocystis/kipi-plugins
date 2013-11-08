@@ -3,11 +3,16 @@ changes related to this plugin
 
 Is Tools the correct menu for this plugin?
 
-Add item to photivo.
+Add item to photivo menu:
 Input=>Open sidecar file
-Option to have sidecar to be removed
-Maybe sidecar could be deleted as new image file is loaded.
+There should be an Option to have sidecar to be removed
+Maybe sidecar could be deleted as a new image file is loaded.
 
 Add menu item to services menu so that photivo can be opened from
 light table image, or from main image, without using Tools menu.
 
+Batch mode includes sidecar. Ratings and tags are included, but
+headline and caption does not appear.
+
+After tiff file is created, digikam needs to reread it.
+Sometimes, tiff file does not have tags written to it.
