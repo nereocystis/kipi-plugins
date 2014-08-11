@@ -2,7 +2,7 @@ This is a kipi plugin which calls photivo, using digikam sidecars
 
 
 This plugin calls photivo using arguments of the image file,
-and a sidecar, if the sidecar exists. 
+and a sidecar, if the sidecar exists.
 
 Photivo requirements:
 This plugin requires a version of photivo which supports the
@@ -77,4 +77,4 @@ file. This results in both old and new tags.
 When the IPTC headline is modified in PNG file, this change may not
 reflected in the XMP headline and caption. EXIF does appear to be updated.
 
-When "Send to batch" is chosen, Sidecar should be saved to pts file. It is saved when
+When "Send to batch" is chosen, Sidecar should be saved to pts file.
