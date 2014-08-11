@@ -8,11 +8,11 @@ MESSAGE(STATUS "Starting CMake configuration for: kipi-plugins")
 
 # kipi-plugins version
 SET(KIPIPLUGINS_MAJOR_VERSION "4")
-SET(KIPIPLUGINS_MINOR_VERSION "0")
+SET(KIPIPLUGINS_MINOR_VERSION "3")
 SET(KIPIPLUGINS_PATCH_VERSION "0")
 
 # kipi-plugins release date
-SET (KIPIPLUGINS_RELEASE_DATE "2013-10-20")
+SET (KIPIPLUGINS_RELEASE_DATE "2014-09-07")
 
 # Suffix to add at end of version string. Usual values are:
 # "-git"   : alpha code unstable from git. Do not use in production
@@ -21,7 +21,7 @@ SET (KIPIPLUGINS_RELEASE_DATE "2013-10-20")
 # "-beta3" : beta3 release.
 # "-rc"    : release candidate.
 # ""       : final relase. Can be used in production.
-SET(KIPIPLUGINS_SUFFIX_VERSION "-beta1")
+SET(KIPIPLUGINS_SUFFIX_VERSION "")
 
 # =======================================================
 # Set env. variables accordinly.
@@ -29,81 +29,11 @@ SET(KIPIPLUGINS_SUFFIX_VERSION "-beta1")
 SET(KIPIPLUGINS_VERSION_STRING
     "${KIPIPLUGINS_MAJOR_VERSION}.${KIPIPLUGINS_MINOR_VERSION}.${KIPIPLUGINS_PATCH_VERSION}${KIPIPLUGINS_SUFFIX_VERSION}"
    )
-
-# =======================================================
-# some useful macros for printing status information
-
-SET(PRINT_COMPILE_LENGTH "40")
-MACRO(FILL_WITH_DOTS VAR)
-
-    STRING(LENGTH ${${VAR}} NAME_LENGTH)
-
-    MATH(EXPR DOT_LENGTH "${PRINT_COMPILE_LENGTH} - ${NAME_LENGTH}")
-    IF(${DOT_LENGTH} LESS 0)
-        SET(DOT_LENGTH 0)
-    ENDIF(${DOT_LENGTH} LESS 0)
-
-    FOREACH(COUNT RANGE ${DOT_LENGTH})
-        SET(${VAR} "${${VAR}}.")
-    ENDFOREACH(COUNT)
-
-ENDMACRO(FILL_WITH_DOTS)
-
-MACRO(PRINT_PLUGIN_COMPILE_STATUS NAME)
-
-    SET(COMPILE_MESSAGE "${NAME} will be compiled")
-    FILL_WITH_DOTS(COMPILE_MESSAGE)
-
-    IF(${ARGN})
-        MESSAGE(STATUS " ${COMPILE_MESSAGE} YES (optional)")
-    ELSE(${ARGN})
-        MESSAGE(STATUS " ${COMPILE_MESSAGE} NO  (optional - Look README file for more details about dependencies)")
-    ENDIF(${ARGN})
-
-ENDMACRO(PRINT_PLUGIN_COMPILE_STATUS)
-
-MACRO(PRINT_OPTIONAL_LIBRARY_STATUS NAME)
-
-    SET(LIB_MESSAGE "${NAME} library found")
-    FILL_WITH_DOTS(LIB_MESSAGE)
-
-    IF(${ARGN})
-        MESSAGE(STATUS " ${LIB_MESSAGE} YES (optional)")
-    ELSE(${ARGN})
-        MESSAGE(STATUS " ${LIB_MESSAGE} NO  (optional)")
-    ENDIF(${ARGN})
-
-ENDMACRO(PRINT_OPTIONAL_LIBRARY_STATUS)
-
-MACRO(PRINT_LIBRARY_STATUS NAME WEBSITE VERSIONHINT)
-
-    SET(LIB_MESSAGE "${NAME} library found")
-    FILL_WITH_DOTS(LIB_MESSAGE)
-
-    IF(${ARGN})
-        MESSAGE(STATUS " ${LIB_MESSAGE} YES")
-    ELSE(${ARGN})
-        MESSAGE(STATUS " ${LIB_MESSAGE} NO")
-        MESSAGE(STATUS "")
-        MESSAGE(SEND_ERROR " kipi-plugins needs ${NAME}. You need to install the ${NAME}${VERSIONHINT} library development package.")
-        MESSAGE(STATUS " ${NAME} website is at ${WEBSITE}")
-        MESSAGE(STATUS "")
-    ENDIF(${ARGN})
-
-ENDMACRO(PRINT_LIBRARY_STATUS)
-
-MACRO(PRINT_OPTIONAL_QTMODULE_STATUS NAME)
-
-    SET(LIB_MESSAGE "${NAME} module found")
-    FILL_WITH_DOTS(LIB_MESSAGE)
-
-    IF(${ARGN})
-        MESSAGE(STATUS " ${LIB_MESSAGE} YES")
-    ELSE(${ARGN})
-        MESSAGE(STATUS " ${LIB_MESSAGE} NO")
-    ENDIF(${ARGN})
-
-ENDMACRO(PRINT_OPTIONAL_QTMODULE_STATUS)
+   
+# NOTE: This string is used to set libkipiplugins SO version ID
+SET(KIPIPLUGINS_LIB_SO_VERSION_STRING
+    "${KIPIPLUGINS_MAJOR_VERSION}.${KIPIPLUGINS_MINOR_VERSION}.${KIPIPLUGINS_PATCH_VERSION}"
+   )
 
 # =======================================================
 
@@ -122,12 +52,15 @@ INCLUDE(MacroLibrary)
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
 # Dependencies detection required by all plugins
-FIND_PACKAGE(Kipi 2.0.0 REQUIRED)
-FIND_PACKAGE(Kexiv2     REQUIRED)
-FIND_PACKAGE(JPEG       REQUIRED)
-FIND_PACKAGE(PNG        REQUIRED)
-FIND_PACKAGE(TIFF       REQUIRED)
-FIND_PACKAGE(Kdcraw     REQUIRED)
+
+SET(KIPI_MIN_VERSION "2.0.0")
+
+FIND_PACKAGE(Kipi ${KIPI_MIN_VERSION} REQUIRED)
+FIND_PACKAGE(Kexiv2                   REQUIRED)
+FIND_PACKAGE(JPEG                     REQUIRED)
+FIND_PACKAGE(PNG                      REQUIRED)
+FIND_PACKAGE(TIFF                     REQUIRED)
+FIND_PACKAGE(Kdcraw                   REQUIRED)
 
 # Check the libkdcraw version
 
@@ -162,17 +95,16 @@ MACRO_OPTIONAL_FIND_PACKAGE(BISON)                                       # For P
 MACRO_OPTIONAL_FIND_PACKAGE(KdepimLibs)                                  # For Calendar (libkcal).
 MACRO_OPTIONAL_FIND_PACKAGE(QCA2)                                        # For Shwup and YandexFotki.
 MACRO_OPTIONAL_FIND_PACKAGE(KSane)                                       # For AcquireImages.
-MACRO_OPTIONAL_FIND_PACKAGE(OpenCV)                                      # For RemoveRedEyes.
-MACRO_OPTIONAL_FIND_PACKAGE(QJSON)                                       # For Debian Screenshots Facebook, and Imgur.
+MACRO_OPTIONAL_FIND_PACKAGE(QJSON)                                       # For Debian Screenshots Facebook, GoogleDrive, Dropbox and Imgur.
 MACRO_OPTIONAL_FIND_PACKAGE(KGeoMap)                                     # For GPSSync.
 MACRO_OPTIONAL_FIND_PACKAGE(Mediawiki)                                   # For Mediawiki.
 MACRO_OPTIONAL_FIND_PACKAGE(LibKVkontakte)                               # For VKontakte.
 MACRO_OPTIONAL_FIND_PACKAGE(Hupnp)                                       # For DlnaExport.
 MACRO_OPTIONAL_FIND_PACKAGE(ImageMagick COMPONENTS MagickCore display)   # For VideoSlideshow.
 MACRO_OPTIONAL_FIND_PACKAGE(QtGStreamer)                                 # For VideoSlideshow.
-MACRO_OPTIONAL_FIND_PACKAGE(QtKOAuth)                                     # For Imgur Auhtenticated API
+MACRO_OPTIONAL_FIND_PACKAGE(QtKOAuth)                                    # For Imgur Auhtenticated API
 
-# check the libkgeomap version
+# Check the libkgeomap version
 # note that old versions don't specify version information, so for now
 # just inform the user if version information was found
 IF (KGEOMAP_VERSION)
@@ -182,40 +114,12 @@ ENDIF (KGEOMAP_VERSION)
 
 # X11 check, LINUX Only.
 IF(NOT WIN32 AND NOT APPLE)
-    MACRO_OPTIONAL_FIND_PACKAGE(X11)   # For AdvancedSlideshow and ImageViewer.
+    MACRO_OPTIONAL_FIND_PACKAGE(X11)                                     # For AdvancedSlideshow and ImageViewer.
 ENDIF(NOT WIN32 AND NOT APPLE)
 
-# SPECIAL OPENCV HANDLING
-
-# there are two versions of FindOpenCV.cmake in the wild, one defining
-# OpenCV_LIBRARIES, the other defining OpenCV_LIBS. Make sure we handle
-# both cases.
-IF (NOT OpenCV_LIBRARIES)
-    SET(OpenCV_LIBRARIES ${OpenCV_LIBS})
-ENDIF (NOT OpenCV_LIBRARIES)
-
-# same story with OpenCV_INCLUDE_DIRS and OpenCV_INCLUDE_DIR:
-IF (NOT OpenCV_INCLUDE_DIRS)
-    SET(OpenCV_INCLUDE_DIRS ${OpenCV_INCLUDE_DIR})
-ENDIF (NOT OpenCV_INCLUDE_DIRS)
-
-IF (OpenCV_LIBRARIES AND OpenCV_INCLUDE_DIRS)
-    SET (OpenCV_FOUND TRUE)
-ENDIF (OpenCV_LIBRARIES AND OpenCV_INCLUDE_DIRS)
-
-# OpenMP detection requires CMake >= 2.6.3
-
-EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --version OUTPUT_VARIABLE VERSION_CMAKE_INFO)
-MESSAGE(STATUS "CMake version: ${VERSION_CMAKE_INFO}")
-STRING(REPLACE "-patch " "." VERSION_CMAKE_INFO "${VERSION_CMAKE_INFO}")
-MESSAGE(STATUS "CMake version (cleaned): ${VERSION_CMAKE_INFO}")
-MACRO_ENSURE_VERSION("2.6.3" "${VERSION_CMAKE_INFO}" OPENMP_VERSION_CMAKE)
-
-IF(OPENMP_VERSION_CMAKE AND NOT APPLE)
-    MACRO_OPTIONAL_FIND_PACKAGE(OpenMP)
-ELSE(OPENMP_VERSION_CMAKE AND NOT APPLE)
-    MESSAGE(STATUS "CMake version is too old: cannot detected OpenMP. Some plugins may have a weaker performance without OpenMP.")
-ENDIF(OPENMP_VERSION_CMAKE AND NOT APPLE)
+INCLUDE(MacroUtils)
+INCLUDE(MacroOpenCV)
+DETECT_OPENCV(2.4.9 core highgui objdetect contrib legacy imgproc)
 
 INCLUDE(MacroOptionalDependPackage)
 
@@ -257,10 +161,6 @@ PRINT_OPTIONAL_LIBRARY_STATUS("libimagemagick"         ImageMagick_FOUND)
 PRINT_OPTIONAL_LIBRARY_STATUS("libqtgstreamer"         QTGSTREAMER_FOUND)
 PRINT_OPTIONAL_LIBRARY_STATUS("QtKOAuth"               QTKOAUTH_FOUND)
 
-IF(OPENMP_VERSION_CMAKE)
-    PRINT_OPTIONAL_LIBRARY_STATUS("OpenMP" OPENMP_FOUND)
-ENDIF(OPENMP_VERSION_CMAKE)
-
 # LINUX Only.
 IF(NOT WIN32 AND NOT APPLE)
     PRINT_OPTIONAL_LIBRARY_STATUS("libX11" X11_FOUND AND X11_Xrandr_FOUND)
@@ -288,9 +188,9 @@ ELSE(JPEG_FOUND AND PNG_FOUND AND TIFF_FOUND AND KDCRAW_FOUND AND KEXIV2_FOUND A
     SET(KIPIPLUGINS_CAN_BE_COMPILED false)
 ENDIF(JPEG_FOUND AND PNG_FOUND AND TIFF_FOUND AND KDCRAW_FOUND AND KEXIV2_FOUND AND KIPI_FOUND)
 
-PRINT_PLUGIN_COMPILE_STATUS("Shwup" QCA2_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("YandexFotki" QCA2_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("HtmlExport" LIBXML2_FOUND AND LIBXSLT_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Shwup" QCA2_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("YandexFotki" QCA2_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("HtmlExport" LIBXML2_FOUND AND LIBXSLT_FOUND)
 
 # decide if AdvancedSlideshow and ImageViewer can be built
 IF(NOT WIN32 AND NOT APPLE)
@@ -322,26 +222,51 @@ IF (KDE_VERSION)
     ENDIF (${KDE_VERSION} VERSION_LESS ${WALLPAPER_KDE_REQ_VER})
 ENDIF (KDE_VERSION)
 
-PRINT_PLUGIN_COMPILE_STATUS("AdvancedSlideshow"  BUILD_VIEWERS)
-PRINT_PLUGIN_COMPILE_STATUS("ImageViewer"        BUILD_VIEWERS)
-PRINT_PLUGIN_COMPILE_STATUS("AcquireImages"      KSANE_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("DNGConverter"       EXPAT_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("RemoveRedEyes"      OpenCV_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Debian Screenshots" QJSON_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Facebook"           QJSON_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Imgur"              QJSON_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("VKontakte"          LIBKVKONTAKTE_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("IpodExport"         IPOD_FOUND AND GLIB2_FOUND AND GOBJECT_FOUND AND GDK_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Calendar"           KDEPIMLIBS_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("GPSSync"            KGEOMAP_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Mediawiki"          MEDIAWIKI_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Panorama"           FLEX_FOUND AND BISON_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("VideoSlideshow"     ImageMagick_FOUND AND QTGSTREAMER_FOUND)
-PRINT_PLUGIN_COMPILE_STATUS("Wallpaper"          BUILD_WALLPAPER)
+PRINT_COMPONENT_COMPILE_STATUS("AdvancedSlideshow"  BUILD_VIEWERS)
+PRINT_COMPONENT_COMPILE_STATUS("ImageViewer"        BUILD_VIEWERS)
+PRINT_COMPONENT_COMPILE_STATUS("AcquireImages"      KSANE_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("DNGConverter"       EXPAT_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("RemoveRedEyes"      OpenCV_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Debian Screenshots" QJSON_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Facebook"           QJSON_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Imgur"              QJSON_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("GoogleDrive"        QJSON_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Dropbox"            QJSON_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("VKontakte"          LIBKVKONTAKTE_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("IpodExport"         IPOD_FOUND AND GLIB2_FOUND AND GOBJECT_FOUND AND GDK_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Calendar"           KDEPIMLIBS_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("GPSSync"            KGEOMAP_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Mediawiki"          MEDIAWIKI_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Panorama"           FLEX_FOUND AND BISON_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("VideoSlideshow"     ImageMagick_FOUND AND QTGSTREAMER_FOUND)
+PRINT_COMPONENT_COMPILE_STATUS("Wallpaper"          BUILD_WALLPAPER)
 
-MESSAGE(STATUS "----------------------------------------------------------------------------------")
-MESSAGE(STATUS "")
 
+# Set QtGStreamer API version --------------------------------------------------------------------------
+
+IF (QTGSTREAMER_FOUND)
+
+    MESSAGE(STATUS "----------------------------------------------------------------------------------")
+    MESSAGE(STATUS "")
+
+    IF( (${QtGStreamer_VERSION_MAJOR} EQUAL 1 AND ${QtGStreamer_VERSION_MINOR} EQUAL 1 AND ${QtGStreamer_VERSION_PATCH} GREATER 80)
+        OR (${QtGStreamer_VERSION_MAJOR} EQUAL 1 AND ${QtGStreamer_VERSION_MINOR} GREATER 1) )
+        SET(GSTREAMER_API_1 TRUE)
+    ELSE()
+        SET(GSTREAMER_API_1 FALSE)
+    ENDIF()
+
+    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/gstreamerapi.h.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/gstreamerapi.h" @ONLY)
+
+    MESSAGE(STATUS "Found QtGstreamer version : ${QtGStreamer_VERSION}")
+    MESSAGE(STATUS "Using GStreamer API 1: ${GSTREAMER_API_1}")
+
+
+    MESSAGE(STATUS "----------------------------------------------------------------------------------")
+    MESSAGE(STATUS "")
+
+ENDIF()
+    
 # ==================================================================================================
 
 IF(KIPIPLUGINS_CAN_BE_COMPILED)
@@ -358,7 +283,7 @@ IF(KIPIPLUGINS_CAN_BE_COMPILED)
 
     # Add a custom command to drive the git script whenever the git entries
     # file changes.
-    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/gitscript.cmake.in_cmake"
+    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/gitscript.cmake.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/gitscript.cmake"
                    @ONLY)
 
@@ -371,13 +296,9 @@ IF(KIPIPLUGINS_CAN_BE_COMPILED)
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/common/libkipiplugins
                         ${CMAKE_CURRENT_BINARY_DIR}/common/libkipiplugins
                         ${CMAKE_CURRENT_SOURCE_DIR}/common/libkipiplugins/dialogs
-                        ${CMAKE_CURRENT_BINARY_DIR}/common/libkipiplugins/dialogs
                         ${CMAKE_CURRENT_SOURCE_DIR}/common/libkipiplugins/widgets
-                        ${CMAKE_CURRENT_BINARY_DIR}/common/libkipiplugins/widgets
                         ${CMAKE_CURRENT_SOURCE_DIR}/common/libkipiplugins/tools
-                        ${CMAKE_CURRENT_BINARY_DIR}/common/libkipiplugins/tools
                         ${CMAKE_CURRENT_SOURCE_DIR}/common/libkipiplugins/tools/imageio
-                        ${CMAKE_CURRENT_BINARY_DIR}/common/libkipiplugins/tools/imageio
                         ${KEXIV2_INCLUDE_DIR}
                         ${KDCRAW_INCLUDE_DIR}
                         ${KIPI_INCLUDE_DIR}
@@ -461,6 +382,8 @@ IF(KIPIPLUGINS_CAN_BE_COMPILED)
         ADD_SUBDIRECTORY(debianscreenshots)
         ADD_SUBDIRECTORY(facebook)
         ADD_SUBDIRECTORY(imgurexport)
+        ADD_SUBDIRECTORY(googledrive)
+        ADD_SUBDIRECTORY(dropbox)
     ENDIF(QJSON_FOUND)
 
     IF(LIBKVKONTAKTE_FOUND)
@@ -513,7 +436,7 @@ IF(KIPIPLUGINS_CAN_BE_COMPILED)
     ENDIF(BUILD_WALLPAPER)
 
     IF(NOT WIN32)
-        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/kipi-plugins.lsm.cmake ${CMAKE_CURRENT_BINARY_DIR}/kipi-plugins.lsm)
+        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/kipi-plugins.lsm.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/kipi-plugins.lsm)
     ENDIF(NOT WIN32)
 
 ENDIF(KIPIPLUGINS_CAN_BE_COMPILED)
